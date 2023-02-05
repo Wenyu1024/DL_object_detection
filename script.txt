@@ -1,0 +1,144 @@
+import os
+import rope
+import pandas as pd
+import shutil
+import numpy as np
+from PIL import Image
+#import matplotlib.pyplot as plt
+#import matplotlib as mpl
+#mpl.use('tkagg')    #YAAA!!  this finally makes the Damn thing work
+#import matplotlib.pyplot as plt
+import scipy.misc
+from scipy import stats
+import requests
+import time
+
+#try to optimize the script so that I don't need 9.22 day for this
+
+os.chdir('C:\\Users\\wenyu\\Documents\\image deep learning\\data\\large\\labels3')
+list= os.listdir()
+output_proto= np.zeros((80*64,15), dtype=np.int)
+output_proto = pd.DataFrame(output_proto, columns=['cls','x','x','x','x1','y1','x2','y2','x','x','x','x','x','x','e'])
+
+for n in range(1,81):
+    for m in range(1,65):
+        x_grid = 8+ 16*(n-1)
+        y_grid = 8+ 16*(m-1)
+        output_proto.loc[m+64*(n-1)-1,'x1']  = x_grid-8
+        output_proto.loc[m+64*(n-1)-1,'y1'] = y_grid-8
+        output_proto.loc[m+64*(n-1)-1,'x2'] = x_grid+8
+        output_proto.loc[m+64*(n-1)-1,'y2'] = y_grid+8
+        output_proto.loc[m+64*(n-1)-1,'cls'] = 'dontcare'
+        output_proto.loc[m+64*(n-1)-1,'x_grid']=x_grid
+        output_proto.loc[m+64*(n-1)-1,'y_grid']=y_grid
+
+
+
+#for name in list:
+name='Week5_28921_c02_02_w1.tif.txt'
+df=pd.read_csv(name, delimiter=" ", header = None)
+df.columns=['cls','x','x','x','x1','y1','x2','y2','x','x','x','x','x','x','e']
+output=copy.deepcopy(output_proto)
+n=0
+start_time = time.time()
+test1=[]
+test2=[]
+while n<5120:
+    dis_nearest=9999999999
+    x_grid=output.loc[n,'x_grid']
+    y_grid=output.loc[n,'y_grid']
+    n
+    for x1,y1,x2,y2 in zip(df["x1"],df["y1"],df["x2"],df["y2"]):
+#    while m< len_cell:
+#        x1=df.loc[m,'x1']
+#        y1=df.loc[m,'y1']
+#        x2=df.loc[m,'x2']
+#        y2=df.loc[m,'y2']
+        long= x2-x1
+        x_obj= (x2-x1)/2+x1
+        y_obj= (y2-y1)/2+y1
+        dis_sq= (x_obj-x_grid)**2+ (y_obj-y_grid)**2
+        suml= 16**2+ long**2
+        #m+=1
+        if dis_sq > dis_nearest:
+            continue
+        else:
+            if dis_sq < suml :
+                output.loc[n,'cls'] = 'delete'
+                test1.append(suml-dis_sq)
+                test2.append(m)
+                #break
+            else:
+                dis_nearest=dis_sq
+    n=n+1
+    
+print("--- %s seconds ---" % (time.time() - start_time))
+
+    output=output.iloc[:,0:15]
+    output1= output[output['cls'].isin(['dontcare'])]
+    output2=output1.sample(n=600-len(df.cls), replace=True)
+    output2=df.append(output2,ignore_index=True)
+    output2.x1=output2.x1.astype(int)
+    output2.y1=output2.y1.astype(int)
+    output2.x2=output2.x2.astype(int)
+    output2.y2=output2.y2.astype(int)
+    #output2.to_csv(name,sep=' ', header= False, index= False)
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+####################################################################
+##the right code
+os.chdir('')
+list= os.listdir()
+output_proto= np.zeros((80*64,15), dtype=np.int)
+output_proto = pd.DataFrame(output_proto, columns=['cls','x','x','x','x1','y1','x2','y2','x','x','x','x','x','x','e'])
+
+for n in range(1,81):
+    for m in range(1,65):
+        x_grid = 8+ 16*(n-1)
+        y_grid = 8+ 16*(m-1)
+        output_proto.loc[m+64*(n-1)-1,'x1']  = x_grid-8
+        output_proto.loc[m+64*(n-1)-1,'y1'] = y_grid-8
+        output_proto.loc[m+64*(n-1)-1,'x2'] = x_grid+8
+        output_proto.loc[m+64*(n-1)-1,'y2'] = y_grid+8
+        output_proto.loc[m+64*(n-1)-1,'cls'] = 'dontcare'
+        output_proto.loc[m+64*(n-1)-1,'x_grid']=x_grid
+        output_proto.loc[m+64*(n-1)-1,'y_grid']=y_grid
+
+
+for name in list:
+    name='Week5_28921_c02_02_w1.tif.txt'
+    df=pd.read_csv(name, delimiter=" ", header = None)
+    df.columns=['cls','x','x','x','x1','y1','x2','y2','x','x','x','x','x','x','e']
+    output=copy.deepcopy(output_proto)
+    n=0
+    while n<5120:
+        dis_nearest=9999999999
+        x_grid=output.loc[n,'x_grid']
+        y_grid=output.loc[n,'y_grid']
+        for x1,y1,x2,y2 in zip(df["x1"],df["y1"],df["x2"],df["y2"]):
+            long= x2-x1
+            x_obj= (x2-x1)/2+x1
+            y_obj= (y2-y1)/2+y1
+            dis_sq= (x_obj-x_grid)**2+ (y_obj-y_grid)**2
+            suml= 16**2+ long**2
+            if dis_sq > dis_nearest:
+                continue
+            else:
+                if dis_sq < suml :
+                    output.loc[n,'cls'] = 'delete'
+                    test1.append(suml-dis_sq)
+                    test2.append(m)
+                    break
+                else:
+                    dis_nearest=dis_sq
+        n=n+1
+        
+    output=output.iloc[:,0:15]
+    output1= output[output['cls'].isin(['dontcare'])]
+    output2=output1.sample(n=600-len(df.cls), replace=True)
+    output2=df.append(output2,ignore_index=True)
+    output2.x1=output2.x1.astype(int)
+    output2.y1=output2.y1.astype(int)
+    output2.x2=output2.x2.astype(int)
+    output2.y2=output2.y2.astype(int)
+    #output2.to_csv(name,sep=' ', header= False, index= False)

@@ -1,0 +1,67 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 24 18:08:56 2018
+
+@author: user
+"""os.chdi
+
+import os
+import rope
+import pandas as pd
+import shutil
+import numpy as np
+dir= '/home/user/Desktop/wenyu/data/labels_empty'
+dir2= '/home/user/Desktop/wenyu/data/images2'
+lbl_list= os.listdir(dir)
+os.chdir(dir2)
+
+for name in lbl_list:
+    #name= lbl_list[0]    
+    name1= name.split('.')[0] + '.tif.png'
+    os.remove(name1)
+    
+len(lbl_list)
+
+import random
+all=list(range(0,12212))
+train= random.sample(range(0,12212),int(0.9*12212))
+train=[train]
+train=set(train)
+all=set(all)
+val= all -train
+val=list(val)
+#val= list(set(all) - set(train))
+train[:10]
+
+
+img_list=os.listdir('/home/user/Desktop/wenyu/data/images2')
+img_list.sort()
+lbl_list= os.listdir('/home/user/Desktop/wenyu/data/labels3')
+lbl_list.sort()
+os.chdir('/home/user/Desktop/wenyu/data/images2')
+for w in train:
+    shutil.copy(img_list[w],'/home/user/Desktop/wenyu/digits_2/train/img')
+    
+
+for n in val:
+    shutil.copy(img_list[n],'/home/user/Desktop/wenyu/digits_2/val/img')
+
+
+os.chdir('/home/user/Desktop/wenyu/data/labels3')
+
+for w in train:
+    shutil.copy(lbl_list[w],'/home/user/Desktop/wenyu/digits_2/train/lbl')
+   
+for n in val:
+    shutil.copy(lbl_list[n],'/home/user/Desktop/wenyu/digits_2/val/lbl')
+
+
+lbl_list= os.listdir(path)
+list_done=os.listdir(outpath)
+list_done=set(list_done)
+lbl_list=set(lbl_list)
+undo=lbl_list-list_done
+
+lbl_list=set(lbl_list)
+
+undo=lbl_list-list_done
